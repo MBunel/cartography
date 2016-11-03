@@ -71,6 +71,77 @@ Two maps with the same inches and fixmax parameters will be comparable.
 }
 \examples{
 data("nuts2006")
+## Example 1
+# Layout plot
+layoutLayer(title = "Countries Population in Europe",
+            sources = "Eurostat, 2008",
+            scale = NULL,
+            frame = TRUE,
+            col = "black",
+            coltitle = "white",
+            bg = "#D9F5FF",
+            south = TRUE,
+            extent = nuts0.spdf)
+# Countries plot
+plot(nuts0.spdf, col = "grey60",border = "grey20", add=TRUE)
+# Population plot on proportional symbols
+nuts0.spdf@data <- nuts0.df
+x <- st_as_sf(nuts0.spdf)
+
+sf_propSymbolsLayer(x = x,
+                    var = "pop2008", 
+                    symbols = "square", col =  "#920000",
+                    legend.pos = "right",
+                    legend.title.txt = "Total\\npopulation (2008)",
+                    legend.style = "c")
+
+## Example 2
+# Countries plot
+plot(nuts0.spdf, col = "grey60",border = "grey20")
+# Population plot on proportional symbols
+sf_propSymbolsLayer(x=x,
+                    var = "gdppps2008",
+                    symbols = "bar", col =  "#B00EF0",
+                    legend.pos = "right",
+                    legend.title.txt = "GDP\\nin Millions PPS (2008)",
+                    legend.style = "e")
+
+## Example 3
+oldpar <- par(mfrow = c(1,2), mar = c(0,0,0,0))
+# Countries plot
+plot(nuts0.spdf, col = "grey60",border = "grey20", add=FALSE)
+# Population plot on proportional symbols
+sf_propSymbolsLayer(x = x,
+                    var = "birth_2008", 
+                    fixmax = max(x$birth_2008),
+                    inches = 0.2,
+                    symbols = "circle", col =  "orange",
+                    legend.pos = "right",
+                    legend.title.txt = "nb of births",
+                    legend.style = "e")
+plot(nuts0.spdf, col = "grey60",border = "grey20", add=FALSE)
+# Population plot on proportional symbols
+sf_propSymbolsLayer(x = x,
+                    var = "death_2008",
+                    symbols = "circle", col =  "pink",
+                    fixmax = max(x$birth_2008),
+                    inches = 0.2,
+                    legend.pos = "right",
+                    legend.style = "e",
+                    legend.title.txt = "nb of deaths")
+par(oldpar)
+
+## Example 4
+x$balance <- x$birth_2008-x$death_2008
+plot(nuts0.spdf, col = "grey60",border = "grey20", add=FALSE)
+# Population plot on proportional symbols
+sf_propSymbolsLayer(x = x, inches = 0.3,
+                    var = "balance",
+                    symbols = "circle",
+                    col = "orange", col2 = "green", breakval=0,
+                    legend.pos = "right",
+                    legend.style = "c",
+                    legend.title.txt = "Natural Balance\\n(2008)")
 }
 \seealso{
 \link{legendBarsSymbols}, \link{legendCirclesSymbols}, 

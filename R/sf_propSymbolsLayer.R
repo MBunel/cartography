@@ -41,36 +41,100 @@
 #' @import sp
 #' @examples
 #' data("nuts2006")
+#' ## Example 1
+#' # Layout plot
+#' layoutLayer(title = "Countries Population in Europe",
+#'             sources = "Eurostat, 2008",
+#'             scale = NULL,
+#'             frame = TRUE,
+#'             col = "black",
+#'             coltitle = "white",
+#'             bg = "#D9F5FF",
+#'             south = TRUE,
+#'             extent = nuts0.spdf)
+#' # Countries plot
+#' plot(nuts0.spdf, col = "grey60",border = "grey20", add=TRUE)
+#' # Population plot on proportional symbols
+#' nuts0.spdf@data <- nuts0.df
+#' x <- st_as_sf(nuts0.spdf)
+#' 
+#' sf_propSymbolsLayer(x = x,
+#'                     var = "pop2008", 
+#'                     symbols = "square", col =  "#920000",
+#'                     legend.pos = "right",
+#'                     legend.title.txt = "Total\npopulation (2008)",
+#'                     legend.style = "c")
+#' 
+#' ## Example 2
+#' # Countries plot
+#' plot(nuts0.spdf, col = "grey60",border = "grey20")
+#' # Population plot on proportional symbols
+#' sf_propSymbolsLayer(x=x,
+#'                     var = "gdppps2008",
+#'                     symbols = "bar", col =  "#B00EF0",
+#'                     legend.pos = "right",
+#'                     legend.title.txt = "GDP\nin Millions PPS (2008)",
+#'                     legend.style = "e")
+#' 
+#' ## Example 3
+#' oldpar <- par(mfrow = c(1,2), mar = c(0,0,0,0))
+#' # Countries plot
+#' plot(nuts0.spdf, col = "grey60",border = "grey20", add=FALSE)
+#' # Population plot on proportional symbols
+#' sf_propSymbolsLayer(x = x,
+#'                     var = "birth_2008", 
+#'                     fixmax = max(x$birth_2008),
+#'                     inches = 0.2,
+#'                     symbols = "circle", col =  "orange",
+#'                     legend.pos = "right",
+#'                     legend.title.txt = "nb of births",
+#'                     legend.style = "e")
+#' plot(nuts0.spdf, col = "grey60",border = "grey20", add=FALSE)
+#' # Population plot on proportional symbols
+#' sf_propSymbolsLayer(x = x,
+#'                     var = "death_2008",
+#'                     symbols = "circle", col =  "pink",
+#'                     fixmax = max(x$birth_2008),
+#'                     inches = 0.2,
+#'                     legend.pos = "right",
+#'                     legend.style = "e",
+#'                     legend.title.txt = "nb of deaths")
+#' par(oldpar)
+#' 
+#' ## Example 4
+#' x$balance <- x$birth_2008-x$death_2008
+#' plot(nuts0.spdf, col = "grey60",border = "grey20", add=FALSE)
+#' # Population plot on proportional symbols
+#' sf_propSymbolsLayer(x = x, inches = 0.3,
+#'                     var = "balance",
+#'                     symbols = "circle",
+#'                     col = "orange", col2 = "green", breakval=0,
+#'                     legend.pos = "right",
+#'                     legend.style = "c",
+#'                     legend.title.txt = "Natural Balance\n(2008)")
 sf_propSymbolsLayer <- function(x, var,
-                             inches = 0.3, fixmax = NULL, 
-                             breakval = NULL,
-                             symbols = "circle", 
-                             col = "#E84923", col2 = "#7DC437", 
-                             border = "black", lwd = 1,
-                             legend.pos = "bottomleft", 
-                             legend.title.txt = var,
-                             legend.title.cex = 0.8, 
-                             legend.values.cex = 0.6,
-                             legend.values.rnd = 0,
-                             legend.style = "c", 
-                             legend.frame = FALSE,
-                             add = TRUE){
-  # nuts0.spdf@data <- nuts0.df
-  # x <- st_as_sf(nuts0.spdf)
+                                inches = 0.3, fixmax = NULL, 
+                                breakval = NULL,
+                                symbols = "circle", 
+                                col = "#E84923", col2 = "#7DC437", 
+                                border = "black", lwd = 1,
+                                legend.pos = "bottomleft", 
+                                legend.title.txt = var,
+                                legend.title.cex = 0.8, 
+                                legend.values.cex = 0.6,
+                                legend.values.rnd = 0,
+                                legend.style = "c", 
+                                legend.frame = FALSE,
+                                add = TRUE){
   # surf to point or point to point
   st_geometry(x) <- st_centroid(x)
-  
-  # 
-  # dim(x)
-  # 
-  # var <- "death_2008"
+
   # no NAs and no 0s
   x <- x[!is.na(x = x[,var]) & x[,var]!=0,]
-
   
   # Order the dots
   x <- x[order(abs(x[, var]), decreasing = TRUE),]
-
+  
   # Double color management
   if (!is.null(breakval)){
     mycols <- rep(NA,nrow(x))
@@ -127,12 +191,12 @@ sf_propSymbolsLayer <- function(x, var,
   if (add==FALSE){
     plot(x, col = NA)
   }
+  
+  xy <- t(sapply(st_geometry(x), FUN = function(X){(X[1:2])}))
 
-  w <- t(sapply(st_geometry(x), FUN = function(X){(X[1:2])}))
-  print(w)
   switch(symbols, 
          circle = {
-           symbols(x = w, circles = sizes, bg = mycols, fg = border, 
+           symbols(x = xy, circles = sizes, bg = mycols, fg = border, 
                    lwd = lwd, add = TRUE, inches = inches, asp = 1)
            if(legend.pos!="n"){
              legendCirclesSymbols(pos = legend.pos, 
@@ -150,7 +214,7 @@ sf_propSymbolsLayer <- function(x, var,
            }
          }, 
          square = {
-           symbols(x = w, squares = sizes, bg = mycols, fg = border, 
+           symbols(x = xy, squares = sizes, bg = mycols, fg = border, 
                    lwd = lwd, add = TRUE, inches = inches, asp = 1)
            if(legend.pos!="n"){
              legendSquaresSymbols(pos = legend.pos,
@@ -169,8 +233,8 @@ sf_propSymbolsLayer <- function(x, var,
          }, 
          bar = {
            tmp <- as.matrix(data.frame(width = inches/10, height = sizes))
-           w[,2] <- w[,2] + yinch(sizes/2)
-           symbols(x = w, rectangles = tmp, add = TRUE, bg = mycols,
+           xy[,2] <- xy[,2] + yinch(sizes/2)
+           symbols(x = xy, rectangles = tmp, add = TRUE, bg = mycols,
                    fg = border, lwd = lwd, inches = inches, asp = 1)
            if(legend.pos!="n"){
              legendBarsSymbols(pos = legend.pos, 
@@ -187,5 +251,4 @@ sf_propSymbolsLayer <- function(x, var,
                                style = legend.style)
            }
          })
-  
 }
