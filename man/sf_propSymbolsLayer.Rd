@@ -55,9 +55,6 @@ not (FALSE).}
 
 \item{add}{whether to add the layer to an existing plot (TRUE) or 
 not (FALSE).}
-
-\item{k}{share of the map occupied by the biggest symbol (this argument
-is deprecated; please use inches instead.).}
 }
 \description{
 Plot a proportional symbols layer.
@@ -86,7 +83,7 @@ layoutLayer(title = "Countries Population in Europe",
 plot(nuts0.spdf, col = "grey60",border = "grey20", add=TRUE)
 # Population plot on proportional symbols
 nuts0.spdf@data <- nuts0.df
-x <- st_as_sf(nuts0.spdf)
+x <- sf::st_as_sf(nuts0.spdf)
 
 sf_propSymbolsLayer(x = x,
                     var = "pop2008", 

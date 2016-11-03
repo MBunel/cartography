@@ -7,8 +7,6 @@
 #' @param inches size of the biggest symbol (radius for circles, width for
 #' squares, height for bars) in inches.
 #' @param symbols type of symbols, one of "circle", "square" or "bar".
-#' @param k share of the map occupied by the biggest symbol (this argument
-#' is deprecated; please use inches instead.).
 #' @param col color of symbols.
 #' @param col2 second color of symbols (see Details).
 #' @param border color of symbols borders.
@@ -38,7 +36,7 @@
 #' @seealso \link{legendBarsSymbols}, \link{legendCirclesSymbols}, 
 #' \link{legendSquaresSymbols}, \link{propSymbolsChoroLayer}, 
 #' \link{propSymbolsTypoLayer}
-#' @import sp
+#' @import sf
 #' @examples
 #' data("nuts2006")
 #' ## Example 1
@@ -56,7 +54,7 @@
 #' plot(nuts0.spdf, col = "grey60",border = "grey20", add=TRUE)
 #' # Population plot on proportional symbols
 #' nuts0.spdf@data <- nuts0.df
-#' x <- st_as_sf(nuts0.spdf)
+#' x <- sf::st_as_sf(nuts0.spdf)
 #' 
 #' sf_propSymbolsLayer(x = x,
 #'                     var = "pop2008", 
@@ -126,14 +124,18 @@ sf_propSymbolsLayer <- function(x, var,
                                 legend.style = "c", 
                                 legend.frame = FALSE,
                                 add = TRUE){
+  # Filter and order  
+  
   # surf to point or point to point
   st_geometry(x) <- st_centroid(x)
-
   # no NAs and no 0s
   x <- x[!is.na(x = x[,var]) & x[,var]!=0,]
-  
   # Order the dots
   x <- x[order(abs(x[, var]), decreasing = TRUE),]
+  
+  
+  
+  # Color Management
   
   # Double color management
   if (!is.null(breakval)){
@@ -145,110 +147,27 @@ sf_propSymbolsLayer <- function(x, var,
     mycols <- rep(col, nrow(x))
   }
   
-  if (is.null(fixmax)){
-    fixmax <- max(x[,var])
-  }
   
-  sizer <- function(dots, inches, var, fixmax, symbols){
-    smax <- inches * inches * pi
-    switch(symbols, 
-           circle = {
-             smax <- inches * inches * pi
-             size <- sqrt((abs(dots[, var]) * smax  / fixmax) / pi)
-           }, 
-           square = {
-             smax <- inches * inches
-             size <- sqrt(abs(dots[, var]) * smax   / fixmax)
-           }, 
-           bar = {
-             smax <- inches
-             size <- abs(dots[,var]) * smax  / fixmax
-           })
-    return(size$x)
-  }
+  # Display
   
-  # compute sizes
-  sizes <- sizer(dots = x, inches = inches, var = var, 
-                 fixmax = fixmax, symbols = symbols)
+  # # Display prop symbols
+  # propSymbolsDisplay(x = x, 
+  #                    fixmax = fixmax, 
+  #                    var = var, 
+  #                    inches = inches, 
+  #                    mycols = mycols, 
+  #                    symbols = symbols,
+  #                    border = border, 
+  #                    col = col, 
+  #                    col2 = col2,       
+  #                    breakval  = breakval,
+  #                    legend.pos = legend.pos, 
+  #                    legend.title.txt = legend.title.txt,
+  #                    legend.title.cex = legend.title.cex,
+  #                    legend.values.cex = legend.values.cex,
+  #              
+  #                    legend.frame = legend.frame,
+  #                    legend.values.rnd =  legend.values.rnd,
+  #                    legend.style = legend.style)   
   
-  # size and values for legend, hollow circle (fixmax case)
-  sizeMax <- max(sizes)
-  if (inches <= sizeMax){
-    sizevect <- xinch(seq(inches, min(sizes), length.out = 4))
-    varvect <- seq(fixmax, 0, length.out = 4)
-    inches <- sizeMax
-  }else{
-    mycols <- c(NA, mycols)
-    border <- c(NA, rep(border, nrow(x)))
-    x <- rbind(x[1,],x)
-    x[1,var] <- fixmax
-    sizes <- c(inches, sizes)
-    sizevect <- xinch(seq(inches, min(sizes), length.out = 4))
-    varvect <- seq(fixmax, 0,length.out = 4 )
-  }
-  
-  # plot
-  if (add==FALSE){
-    plot(x, col = NA)
-  }
-  
-  xy <- t(sapply(st_geometry(x), FUN = function(X){(X[1:2])}))
-
-  switch(symbols, 
-         circle = {
-           symbols(x = xy, circles = sizes, bg = mycols, fg = border, 
-                   lwd = lwd, add = TRUE, inches = inches, asp = 1)
-           if(legend.pos!="n"){
-             legendCirclesSymbols(pos = legend.pos, 
-                                  title.txt = legend.title.txt,
-                                  title.cex = legend.title.cex,
-                                  values.cex = legend.values.cex,
-                                  var = varvect,
-                                  r = sizevect,
-                                  breakval  = breakval,
-                                  col = col,
-                                  col2 = col2,
-                                  frame = legend.frame,
-                                  values.rnd =  legend.values.rnd,
-                                  style = legend.style)
-           }
-         }, 
-         square = {
-           symbols(x = xy, squares = sizes, bg = mycols, fg = border, 
-                   lwd = lwd, add = TRUE, inches = inches, asp = 1)
-           if(legend.pos!="n"){
-             legendSquaresSymbols(pos = legend.pos,
-                                  title.txt = legend.title.txt,
-                                  title.cex = legend.title.cex,
-                                  values.cex = legend.values.cex,
-                                  var = varvect,
-                                  r = sizevect,
-                                  breakval  = breakval,
-                                  col = col,
-                                  col2 = col2,
-                                  frame = legend.frame,
-                                  values.rnd =  legend.values.rnd,
-                                  style = legend.style)
-           }
-         }, 
-         bar = {
-           tmp <- as.matrix(data.frame(width = inches/10, height = sizes))
-           xy[,2] <- xy[,2] + yinch(sizes/2)
-           symbols(x = xy, rectangles = tmp, add = TRUE, bg = mycols,
-                   fg = border, lwd = lwd, inches = inches, asp = 1)
-           if(legend.pos!="n"){
-             legendBarsSymbols(pos = legend.pos, 
-                               title.txt = legend.title.txt,
-                               title.cex = legend.title.cex,
-                               values.cex = legend.values.cex,
-                               var = varvect,
-                               r = sizevect,
-                               breakval  = breakval,
-                               col = col,
-                               col2 = col2,
-                               frame = legend.frame,
-                               values.rnd =  legend.values.rnd,
-                               style = legend.style)
-           }
-         })
 }
