@@ -72,18 +72,6 @@ sf_propSymbolsChoroLayer <- function(x,
                                      legend.var2.nodata = "no data",
                                      legend.var2.frame = FALSE,
                                      add = TRUE){
-  
-  # data("nuts2006")
-  # nuts0.spdf@data <- nuts0.df
-  # x <- sf::st_as_sf(nuts0.spdf)
-  # library(sf)
-  # var2 <- "gdppps2008"
-  # breaks = NULL
-  # col = NULL
-  # nclass = NULL
-  # method = "quantile"
-  # var = "pop2008" 
-  
   # Filter and order  
   
   # surf to point or point to point
@@ -104,90 +92,6 @@ sf_propSymbolsChoroLayer <- function(x,
     mycols[is.na(mycols)] <- colNA
   }
   
-  
-  
-  
-  
-  # if (is.null(fixmax)){
-  #   fixmax <- max(dots[,var])
-  # }
-  # 
-  # # size management
-  # sizes <- sizer(dots = dots, inches = inches, var = var,
-  #                fixmax = fixmax, symbols = symbols)
-  # sizeMax <- max(sizes)
-  # 
-  # if (inches <= sizeMax){
-  #   sizevect <- xinch(seq(inches, min(sizes), length.out = 4))
-  #   varvect <- seq(fixmax,0,length.out = 4 )
-  #   inches <- sizeMax
-  # }else{
-  #   mycols <- c(NA, mycols)
-  #   border <- c(NA, rep(border, nrow(dots)))
-  #   dots <- rbind(dots[1,],dots)
-  #   dots[1,var] <- fixmax
-  #   sizes <- c(inches, sizes)
-  #   sizevect <- xinch(seq(inches, min(sizes), length.out = 4))
-  #   varvect <- seq(fixmax, 0,length.out = 4 )
-  # }
-  # 
-  # if (add==FALSE){
-  #   sp::plot(spdf, col = NA, border = NA)
-  # }
-  # switch(symbols, 
-  #        circle = {
-  #          symbols(dots[, 2:3], circles = sizes, bg = as.vector(mycols), 
-  #                  fg = border, 
-  #                  lwd = lwd, add = TRUE, inches = inches, asp = 1)
-  #          if(legend.var.pos!="n"){
-  #            legendCirclesSymbols(pos = legend.var.pos, 
-  #                                 title.txt = legend.var.title.txt,
-  #                                 title.cex = legend.title.cex,
-  #                                 values.cex = legend.values.cex,
-  #                                 var = varvect,
-  #                                 r = sizevect,
-  #                                 col = "grey",
-  #                                 frame = legend.var.frame,
-  #                                 values.rnd =  legend.var.values.rnd,
-  #                                 style = legend.var.style)
-  #          }
-  #        }, 
-  #        square = {
-  #          symbols(dots[, 2:3], squares = sizes, bg = as.vector(mycols), 
-  #                  fg = border, 
-  #                  lwd = lwd, add = TRUE, inches = inches, asp = 1)
-  #          if(legend.var.pos!="n"){
-  #            legendSquaresSymbols(pos = legend.var.pos, 
-  #                                 title.txt = legend.var.title.txt,
-  #                                 title.cex = legend.title.cex,
-  #                                 values.cex = legend.values.cex,
-  #                                 var = varvect,
-  #                                 r = sizevect,
-  #                                 col = "grey",
-  #                                 frame = legend.var.frame,
-  #                                 values.rnd =  legend.var.values.rnd,
-  #                                 style = legend.var.style)
-  #          }
-  #        }, 
-  #        bar = {
-  #          tmp <- as.matrix(data.frame(width = inches/10, height = sizes))
-  #          dots[,3] <- dots[,3] + yinch(sizes/2)
-  #          symbols(dots[,2:3], rectangles = tmp, add = TRUE, 
-  #                  bg = as.vector(mycols),
-  #                  fg = border, lwd = lwd, inches = inches, asp = 1)
-  #          if(legend.var.pos!="n"){
-  #            legendBarsSymbols(pos = legend.var.pos, 
-  #                              title.txt = legend.var.title.txt,
-  #                              title.cex = legend.title.cex,
-  #                              values.cex = legend.values.cex,
-  #                              var = varvect,
-  #                              r = sizevect,
-  #                              col = "grey",
-  #                              frame = legend.var.frame,
-  #                              values.rnd =  legend.var.values.rnd,
-  #                              style = legend.var.style)
-  #          }
-  #        })
   pSymLegParam <- pSymDisp(x = x, var = var, fixmax = fixmax, inches = inches, 
                            mycols = mycols,  border = border, lwd = lwd, 
                            add = add, symbols = symbols)

@@ -7,3 +7,4 @@
 ^example$
 ^docs$
 ^_pkgdown.yaml
+^R/old
