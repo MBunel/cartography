@@ -73,6 +73,42 @@ not (FALSE).}
 Plot a proportional symbols layer with colors based on
  qualitative data.
 }
+\examples{
+# Population plot on proportional symbols
+data("nuts2006")
+nuts0.spdf@data <- nuts0.df
+x <- sf::st_as_sf(nuts0.spdf)
+## Example 1
+plot(x, col = "grey60",border = "grey20")
+x$typo <- c(rep("A",10),rep("B",10),rep("C",10),rep("D",4))
+sf_propSymbolsTypoLayer(x = x,
+                     var = "pop2008", var2="typo")
+
+## Example 2
+#Countries plot
+plot(nuts0.spdf, col = "grey60",border = "grey20", add = FALSE)
+x$typo <- c(rep("A",10),rep("B",10),rep("C",10),rep("D",4))
+x$typo[1:3] <- NA
+x$pop2008[4:6] <- NA
+sf_propSymbolsTypoLayer(x = x,
+                     var = "pop2008", var2="typo",
+                     symbols = "circle",
+                     legend.var.pos = "topright",
+                     legend.var2.pos = "right",
+                     legend.var.title.txt = "Total\\npopulation (2008)",
+                     legend.values.rnd = -3,
+                     legend.var2.title.txt = "Category",
+                     col = carto.pal(pal1 = "pastel.pal", 4),
+                     legend.var2.values.order = c("A", "B", "C", "D"),
+                     legend.var.style = "c")
+# Layout plot
+layoutLayer(title = "Countries Population & Color in Europe",
+            sources = "UMS RIATE, 2015",
+           scale = NULL,
+            frame = TRUE,
+            col = "black",
+            coltitle = "white") 
+}
 \seealso{
 \link{legendBarsSymbols}, \link{legendTypo},
 \link{legendCirclesSymbols}, \link{legendSquaresSymbols},

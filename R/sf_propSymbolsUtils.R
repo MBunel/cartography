@@ -1,4 +1,4 @@
-propSymbolsDisplay <- function(x, fixmax, var, inches, mycols, 
+pSymDisp <- function(x, var, fixmax, inches, mycols, 
                                border, lwd, add, symbols){
   
   if (is.null(fixmax)){
@@ -68,11 +68,15 @@ propSymbolsDisplay <- function(x, fixmax, var, inches, mycols,
 
 
 
-propSymbolsLegendDisplay <- function(legend.pos, legend.title.txt,
-                               legend.title.cex, legend.values.cex,
-                               varvect, sizevect, breakval, col, 
-                               col2, legend.frame, legend.values.rnd,
-                               legend.style){
+pSymLegDisp <- function(varvect, sizevect, symbols,
+                                     breakval, col, col2,
+                                     legend.pos, 
+                                     legend.title.txt,
+                                     legend.title.cex, 
+                                     legend.values.cex,
+                                     legend.values.rnd,
+                                     legend.frame,
+                                     legend.style){
   if(legend.pos!="n"){
     switch(symbols, 
            circle = {
@@ -104,7 +108,6 @@ propSymbolsLegendDisplay <- function(legend.pos, legend.title.txt,
                                   style = legend.style)
            }, 
            bar = {
-             
              legendBarsSymbols(pos = legend.pos, 
                                title.txt = legend.title.txt,
                                title.cex = legend.title.cex,

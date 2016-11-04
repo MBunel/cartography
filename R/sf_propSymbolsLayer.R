@@ -150,24 +150,21 @@ sf_propSymbolsLayer <- function(x, var,
   
   # Display
   
-  # # Display prop symbols
-  # propSymbolsDisplay(x = x, 
-  #                    fixmax = fixmax, 
-  #                    var = var, 
-  #                    inches = inches, 
-  #                    mycols = mycols, 
-  #                    symbols = symbols,
-  #                    border = border, 
-  #                    col = col, 
-  #                    col2 = col2,       
-  #                    breakval  = breakval,
-  #                    legend.pos = legend.pos, 
-  #                    legend.title.txt = legend.title.txt,
-  #                    legend.title.cex = legend.title.cex,
-  #                    legend.values.cex = legend.values.cex,
-  #              
-  #                    legend.frame = legend.frame,
-  #                    legend.values.rnd =  legend.values.rnd,
-  #                    legend.style = legend.style)   
-  
+  # Display prop symbols
+  pSymLegParam <- pSymDisp(x = x, var = var, fixmax = fixmax, inches = inches, 
+                           mycols = mycols,  border = border, lwd = lwd, 
+                           add = add, symbols = symbols)
+  # Display legend
+  pSymLegDisp(pSymLegParam$varvect, 
+              pSymLegParam$sizevect, 
+              symbols,
+              breakval, col, col2,
+              legend.pos, 
+              legend.title.txt,
+              legend.title.cex, 
+              legend.values.cex,
+              legend.values.rnd,
+              legend.frame,
+              legend.style)
+
 }
