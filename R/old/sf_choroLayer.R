@@ -106,13 +106,13 @@ sf_choroLayer <- function(x, var,
                        add = FALSE)
 {
   # get the colors and breaks
-  layer <- choro(var=x[,var]$x, distr = breaks, col = col,
+  layer <- choro(var=x[[var]], distr = breaks, col = col,
                  nclass = nclass, method = method)
   
   colVec <- as.vector(layer$colMap)
   
   nodata <- FALSE
-  if(max(is.na(x[,var]$x)>0)){
+  if(max(is.na(x[[var]])>0)){
     nodata <- TRUE
     colVec[is.na(colVec)] <- colNA
   }

@@ -77,17 +77,17 @@ sf_propSymbolsChoroLayer <- function(x,
   # surf to point or point to point
   st_geometry(x) <- st_centroid(x)
   # no NAs and no 0s
-  x <- x[!is.na(x = x[,var]) & x[,var]!=0,]
+  x <- x[!is.na(x = x[[var]]) & x[[var]]!=0,]
   # Order the dots
-  x <- x[order(abs(x[, var]), decreasing = TRUE),]
+  x <- x[order(abs(x[[var]]), decreasing = TRUE),]
   
   
   # Color Management
-  layer <- choro(var=x[,var2]$x, distr = breaks, col = col,
+  layer <- choro(var=x[[var2]], distr = breaks, col = col,
                  nclass = nclass, method = method)
   mycols <- layer$colMap
   nodata <- FALSE
-  if(max(is.na(x[,var2]$x)>0)){
+  if(max(is.na(x[[var2]])>0)){
     nodata <- TRUE
     mycols[is.na(mycols)] <- colNA
   }

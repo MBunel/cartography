@@ -2,27 +2,25 @@ pSymDisp <- function(x, var, fixmax, inches, mycols,
                                border, lwd, add, symbols){
   
   if (is.null(fixmax)){
-    fixmax <- max(x[,var])
+    fixmax <- max(x[[var]])
   }
   
   smax <- inches * inches * pi
   switch(symbols, 
          circle = {
            smax <- inches * inches * pi
-           size <- sqrt((abs(x[, var]) * smax  / fixmax) / pi)
+           sizes <- sqrt((abs(x[[var]]) * smax  / fixmax) / pi)
          }, 
          square = {
            smax <- inches * inches
-           size <- sqrt(abs(x[, var]) * smax   / fixmax)
+           sizes <- sqrt(abs(x[[var]]) * smax   / fixmax)
          }, 
          bar = {
            smax <- inches
-           size <- abs(x[,var]) * smax  / fixmax
+           sizes <- abs(x[[var]]) * smax  / fixmax
          })
   
-  # compute sizes
-  sizes <- size$x
-  
+
   # size and values for legend, hollow circle (fixmax case)
   sizeMax <- max(sizes)
   if (inches <= sizeMax){

@@ -1,8 +1,15 @@
 #' @title Proportional Symbols Layer
-#' @name sf_propSymbolsLayer
+#' @name propSymbolsLayer
 #' @description Plot a proportional symbols layer.
-#' @param x a SpatialPointsDataFrame or a SpatialPolygonsDataFrame; if spdf 
+#' @param sf an sf object, a simple feature collection. 
+#' @param spdf a SpatialPointsDataFrame or a SpatialPolygonsDataFrame; if spdf 
 #' is a SpatialPolygonsDataFrame symbols are plotted on centroids.
+#' @param df a data frame that contains the values to plot. If df is missing 
+#' spdf@data is used instead. 
+#' @param spdfid identifier field in spdf, default to the first column 
+#' of the spdf data frame. (optional)
+#' @param dfid identifier field in df, default to the first column 
+#' of df. (optional)
 #' @param var name of the numeric field in df to plot.
 #' @param inches size of the biggest symbol (radius for circles, width for
 #' squares, height for bars) in inches.
@@ -110,28 +117,42 @@
 #'                     legend.pos = "right",
 #'                     legend.style = "c",
 #'                     legend.title.txt = "Natural Balance\n(2008)")
-sf_propSymbolsLayer <- function(x, var,
-                                inches = 0.3, fixmax = NULL, 
-                                breakval = NULL,
-                                symbols = "circle", 
-                                col = "#E84923", col2 = "#7DC437", 
-                                border = "black", lwd = 1,
-                                legend.pos = "bottomleft", 
-                                legend.title.txt = var,
-                                legend.title.cex = 0.8, 
-                                legend.values.cex = 0.6,
-                                legend.values.rnd = 0,
-                                legend.style = "c", 
-                                legend.frame = FALSE,
-                                add = TRUE){
+propSymbolsLayer <- function(sf, spdf, df, spdfid = NULL, dfid = NULL, var,
+                             inches = 0.3, fixmax = NULL, 
+                             breakval = NULL,
+                             symbols = "circle", 
+                             col = "#E84923", col2 = "#7DC437", 
+                             border = "black", lwd = 1,
+                             legend.pos = "bottomleft", 
+                             legend.title.txt = var,
+                             legend.title.cex = 0.8, 
+                             legend.values.cex = 0.6,
+                             legend.values.rnd = 0,
+                             legend.style = "c", 
+                             legend.frame = FALSE,
+                             add = TRUE){
+  
+  if (missing(sf)){
+    # Check missing df and NULL identifiers 
+    if (missing(df)){df <- spdf@data}
+    if (is.null(spdfid)){spdfid <- names(spdf@data)[1]}
+    if (is.null(dfid)){dfid <- names(df)[1]}
+    spdf@data <- data.frame(spdf@data, df[match(spdf[[spdfid]], df[[dfid]]),])
+    x <- sf::st_as_sf(spdf)
+  }
+  
+  
+  
+  
+  
   # Filter and order  
   
   # surf to point or point to point
   st_geometry(x) <- st_centroid(x)
   # no NAs and no 0s
-  x <- x[!is.na(x = x[,var]) & x[,var]!=0,]
+  x <- x[!is.na(x = x[[var]]) & x[[var]]!=0,]
   # Order the dots
-  x <- x[order(abs(x[, var]), decreasing = TRUE),]
+  x <- x[order(abs(x[[var]]), decreasing = TRUE),]
   
   
   
@@ -140,7 +161,7 @@ sf_propSymbolsLayer <- function(x, var,
   # Double color management
   if (!is.null(breakval)){
     mycols <- rep(NA,nrow(x))
-    mycols <- ifelse(test = x[,var] >= breakval, 
+    mycols <- ifelse(test = x[[var]] >= breakval, 
                      yes = col,
                      no = col2)
   }else{
@@ -166,5 +187,5 @@ sf_propSymbolsLayer <- function(x, var,
               legend.values.rnd,
               legend.frame,
               legend.style)
-
+  
 }

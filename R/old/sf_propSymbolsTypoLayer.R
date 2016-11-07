@@ -97,15 +97,15 @@ sf_propSymbolsTypoLayer <- function(x, var,
   # surf to point or point to point
   st_geometry(x) <- st_centroid(x)
   # no NAs and no 0s
-  x <- x[!is.na(x = x[,var]) & x[,var]!=0,]
+  x <- x[!is.na(x = x[[var]]) & x[[var]]!=0,]
   # Order the dots
-  x <- x[order(abs(x[, var]), decreasing = TRUE),]
+  x <- x[order(abs(x[[var]]), decreasing = TRUE),]
   
   
   # Color management 
   
   # modalities
-  mod <- unique(x[, var2]$x)
+  mod <- unique(x[[var2]])
   mod <- mod[!is.na(mod)]
 
   # check nb col vs nb mod
@@ -117,13 +117,13 @@ sf_propSymbolsTypoLayer <- function(x, var,
                        col = col[1:length(legend.var2.values.order)], 
                        stringsAsFactors = FALSE)
   
-  mycols <- refcol[match(x[, var2]$x, refcol[,1]),2]
+  mycols <- refcol[match(x[[var]], refcol[["mod"]]), 2]
   # for the legend  
   mycolsleg <- refcol[,2]
   rVal <- refcol[,1]
   # no data stuff
   nodata <- FALSE
-  if(max(is.na(x[, var2]) > 0)){
+  if(max(is.na(x[[var2]]) > 0)){
     nodata <- TRUE
     mycols[is.na(mycols)] <- colNA
   }
