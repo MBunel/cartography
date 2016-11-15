@@ -49,18 +49,18 @@ layoutLayer <- function(title = "Title of the map, year",
                         col = "black", coltitle = "white", theme = NULL, 
                         bg = NULL, scale = 0, frame = TRUE, north = FALSE, 
                         south = FALSE, extent = NULL){
-  extent <- nuts0.sf
-  library(sf)
+  
+  ############ Correct extent color, border POINT OR POLYGON #######
+  
+  
   if (!is.null(extent)){
-    if (is(extent, "Spatial")){
+    if (methods::is(extent, "Spatial")){
       sp::plot(extent, border = NA, col = NA, add = FALSE)
     }
-  
+    
     if (is(extent, "sf")){
-      
       st_geometry(extent) <- st_centroid(extent)
-    class(st_geometry(extent))
-        plot(extent,  add = FALSE)
+      plot(extent,  add = FALSE)
     }
     mapExtent <- par()$usr
   }else {

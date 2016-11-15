@@ -1,9 +1,16 @@
 #' @title Proportional Symbols Typo Layer
-#' @name sf_propSymbolsTypoLayer
+#' @name propSymbolsTypoLayer
 #' @description Plot a proportional symbols layer with colors based on
 #'  qualitative data.
-#' @param x SpatialPointsDataFrame or SpatialPolygonsDataFrame; if spdf
+#' @param sf an sf object, a simple feature collection. 
+#' @param spdf a SpatialPointsDataFrame or a SpatialPolygonsDataFrame; if spdf 
 #' is a SpatialPolygonsDataFrame symbols are plotted on centroids.
+#' @param df a data frame that contains the values to plot. If df is missing 
+#' spdf@data is used instead. 
+#' @param spdfid identifier field in spdf, default to the first column 
+#' of the spdf data frame. (optional)
+#' @param dfid identifier field in df, default to the first column 
+#' of df. (optional)
 #' @param var name of the numeric field in df to plot the symbols sizes.
 #' @param var2 name of the factor (or character) field in df to plot.
 #' @param symbols type of symbols, one of "circle", "square" or "bar".
@@ -48,7 +55,7 @@
 #' ## Example 1
 #' plot(x, col = "grey60",border = "grey20")
 #' x$typo <- c(rep("A",10),rep("B",10),rep("C",10),rep("D",4))
-#' sf_propSymbolsTypoLayer(x = x,
+#' propSymbolsTypoLayer(sf = x,
 #'                      var = "pop2008", var2="typo")
 #' 
 #' ## Example 2
@@ -57,7 +64,7 @@
 #' x$typo <- c(rep("A",10),rep("B",10),rep("C",10),rep("D",4))
 #' x$typo[1:3] <- NA
 #' x$pop2008[4:6] <- NA
-#' sf_propSymbolsTypoLayer(x = x,
+#' propSymbolsTypoLayer(sf = x,
 #'                      var = "pop2008", var2="typo",
 #'                      symbols = "circle",
 #'                      legend.var.pos = "topright",
@@ -75,7 +82,7 @@
 #'             frame = TRUE,
 #'             col = "black",
 #'             coltitle = "white") 
-sf_propSymbolsTypoLayer <- function(x, var,
+propSymbolsTypoLayer <- function(sf, spdf, df, spdfid = NULL, dfid = NULL, var,
                                  inches = 0.3, fixmax = NULL, symbols = "circle",
                                  border = "grey20", lwd = 1,
                                  var2, col = NULL, colNA = "white",
@@ -92,12 +99,23 @@ sf_propSymbolsTypoLayer <- function(x, var,
                                  legend.var2.nodata = "no data",
                                  legend.var2.frame = FALSE,
                                  add = TRUE){
+  
+  # spdf management
+  if (missing(sf)){
+    # Check missing df and NULL identifiers 
+    if (missing(df)){df <- spdf@data}
+    if (is.null(spdfid)){spdfid <- names(spdf@data)[1]}
+    if (is.null(dfid)){dfid <- names(df)[1]}
+    spdf@data <- data.frame(spdf@data, df[match(spdf[[spdfid]], df[[dfid]]),])
+    x <- sf::st_as_sf(spdf)
+  }
+  
   # Filter and order  
   
   # surf to point or point to point
   st_geometry(x) <- st_centroid(x)
   # no NAs and no 0s
-  x <- x[!is.na(x = x[[var]]) & x[[var]]!=0,]
+  x <- x[!is.na(x = x[[var]]) & x[[var]] != 0, ]
   # Order the dots
   x <- x[order(abs(x[[var]]), decreasing = TRUE),]
   
@@ -117,7 +135,7 @@ sf_propSymbolsTypoLayer <- function(x, var,
                        col = col[1:length(legend.var2.values.order)], 
                        stringsAsFactors = FALSE)
   
-  mycols <- refcol[match(x[[var]], refcol[["mod"]]), 2]
+  mycols <- refcol[match(x[[var2]], refcol[["mod"]]), 2]
   # for the legend  
   mycolsleg <- refcol[,2]
   rVal <- refcol[,1]

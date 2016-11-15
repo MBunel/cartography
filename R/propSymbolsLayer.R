@@ -63,7 +63,7 @@
 #' nuts0.spdf@data <- nuts0.df
 #' x <- sf::st_as_sf(nuts0.spdf)
 #' 
-#' sf_propSymbolsLayer(x = x,
+#' propSymbolsLayer(sf = x,
 #'                     var = "pop2008", 
 #'                     symbols = "square", col =  "#920000",
 #'                     legend.pos = "right",
@@ -74,7 +74,7 @@
 #' # Countries plot
 #' plot(nuts0.spdf, col = "grey60",border = "grey20")
 #' # Population plot on proportional symbols
-#' sf_propSymbolsLayer(x=x,
+#' propSymbolsLayer(sf=x,
 #'                     var = "gdppps2008",
 #'                     symbols = "bar", col =  "#B00EF0",
 #'                     legend.pos = "right",
@@ -86,7 +86,7 @@
 #' # Countries plot
 #' plot(nuts0.spdf, col = "grey60",border = "grey20", add=FALSE)
 #' # Population plot on proportional symbols
-#' sf_propSymbolsLayer(x = x,
+#' propSymbolsLayer(sf = x,
 #'                     var = "birth_2008", 
 #'                     fixmax = max(x$birth_2008),
 #'                     inches = 0.2,
@@ -96,7 +96,7 @@
 #'                     legend.style = "e")
 #' plot(nuts0.spdf, col = "grey60",border = "grey20", add=FALSE)
 #' # Population plot on proportional symbols
-#' sf_propSymbolsLayer(x = x,
+#' propSymbolsLayer(sf = x,
 #'                     var = "death_2008",
 #'                     symbols = "circle", col =  "pink",
 #'                     fixmax = max(x$birth_2008),
@@ -110,7 +110,7 @@
 #' x$balance <- x$birth_2008-x$death_2008
 #' plot(nuts0.spdf, col = "grey60",border = "grey20", add=FALSE)
 #' # Population plot on proportional symbols
-#' sf_propSymbolsLayer(x = x, inches = 0.3,
+#' propSymbolsLayer(sf = x, inches = 0.3,
 #'                     var = "balance",
 #'                     symbols = "circle",
 #'                     col = "orange", col2 = "green", breakval=0,
@@ -131,7 +131,7 @@ propSymbolsLayer <- function(sf, spdf, df, spdfid = NULL, dfid = NULL, var,
                              legend.style = "c", 
                              legend.frame = FALSE,
                              add = TRUE){
-  
+  # spdf management
   if (missing(sf)){
     # Check missing df and NULL identifiers 
     if (missing(df)){df <- spdf@data}
@@ -140,9 +140,6 @@ propSymbolsLayer <- function(sf, spdf, df, spdfid = NULL, dfid = NULL, var,
     spdf@data <- data.frame(spdf@data, df[match(spdf[[spdfid]], df[[dfid]]),])
     x <- sf::st_as_sf(spdf)
   }
-  
-  
-  
   
   
   # Filter and order  
