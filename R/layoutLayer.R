@@ -49,21 +49,17 @@ layoutLayer <- function(title = "Title of the map, year",
                         col = "black", coltitle = "white", theme = NULL, 
                         bg = NULL, scale = 0, frame = TRUE, north = FALSE, 
                         south = FALSE, extent = NULL){
-  
-  ############ Correct extent color, border POINT OR POLYGON #######
-  
-  
+
   if (!is.null(extent)){
     if (methods::is(extent, "Spatial")){
-      sp::plot(extent, border = NA, col = NA, add = FALSE)
+      extent <- sf::st_as_sf(extent)
     }
-    
-    if (is(extent, "sf")){
-      st_geometry(extent) <- st_centroid(extent)
-      plot(extent,  add = FALSE)
-    }
+    bb <- st_bbox(extent)
+    plot.new()
+    plot.window(xlim = bb[c(1,3)], ylim = bb[c(2,4)], xaxs = "i", yaxs = "i", 
+                asp = TRUE)
     mapExtent <- par()$usr
-  }else {
+  } else {
     mapExtent <- par()$usr
   }
   x1 <- mapExtent[1]
@@ -71,7 +67,6 @@ layoutLayer <- function(title = "Title of the map, year",
   y1 <- mapExtent[3]
   y2 <- mapExtent[4]
   delta <- min((y2 - y1) / 40, (x2 - x1) / 40)
-  
   
   # Manage themes
   if(!is.null(theme)){
@@ -83,7 +78,6 @@ layoutLayer <- function(title = "Title of the map, year",
     }
   }
   
-  
   # FRAME
   if(frame == TRUE){
     colf <- col
@@ -91,7 +85,6 @@ layoutLayer <- function(title = "Title of the map, year",
     colf <- NA
   }
   rect(x1, y1, x2, y2, border = colf, col = bg)
-  
   
   # SCALE
   if (!is.null(scale)){
@@ -101,8 +94,6 @@ layoutLayer <- function(title = "Title of the map, year",
     barscale(size = scale, style = "oldschool")
   }
   
-  
-  
   # NORTH
   if(north==T){
     north(pos = "topleft")
@@ -111,7 +102,6 @@ layoutLayer <- function(title = "Title of the map, year",
   if(south==T){
     north(pos = "topleft", south = TRUE)
   }
-  
   
   # TITLE
   size <- 0.8
@@ -124,7 +114,6 @@ layoutLayer <- function(title = "Title of the map, year",
        labels = title, adj=c(0,0),
        cex = size, col = coltitle,font=2)
   par(xpd = FALSE)
-  
   
   # SOURCES
   text(x1+delta/2, y1+delta/2, paste(sources,author,sep="\n"),

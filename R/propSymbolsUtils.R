@@ -43,7 +43,8 @@ pSymDisp <- function(x, var, fixmax, inches, mycols,
   }
   
   # extract xy 
-  xy <- t(sapply(st_geometry(x), FUN = function(X){(X[1:2])}))
+  # xy <- t(sapply(st_geometry(x), FUN = function(X){(X[1:2])}))
+  xy <- do.call(rbind, st_geometry(x))
   
   switch(symbols, 
          circle = {

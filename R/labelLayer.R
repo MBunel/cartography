@@ -56,10 +56,11 @@ labelLayer <- function(sf, spdf, df, spdfid = NULL, dfid = NULL, txt, col = "bla
   }
   
   st_geometry(x) <- st_centroid(x)
-  pts <- st_as_text(st_geometry(x))
-  m <- matrix(data = as.numeric(unlist(strsplit(substr(pts, 7, nchar(pts)-1), split = " "))), ncol = 2, byrow = T)
-  m <- data.frame(m, x[[txt]])
-  text(x = m[,1], y = m[,2], labels = m[,3], cex=cex, col=col, ...)
+  pts <- do.call(rbind, st_geometry(x))
+  # pts <- st_as_text(st_geometry(x))
+  # m <- matrix(data = as.numeric(unlist(strsplit(substr(pts, 7, nchar(pts)-1), split = " "))), ncol = 2, byrow = T)
+  # m <- data.frame(m, x[[txt]])
+  text(x = pts[,1], y = pts[,2], labels = x[[txt]], cex = cex, col = col, ...)
   
 }
 
